@@ -50,6 +50,12 @@ def main():
                 sys.exit()
                 return
 
+            for shot in shots:
+                if asteroid.collides_with(shot):
+                    log_event("asteroid_shot")
+                    shot.kill()
+                    asteroid.kill()
+
         for sprite in drawable:
             sprite.draw(screen)
 
