@@ -4,7 +4,14 @@ import pygame
 
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
-from constants import PLAYER_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import (
+    ASTEROID_MIN_RADIUS,
+    PLAYER_RADIUS,
+    SCORE_COLOR,
+    SCORE_FONT_SIZE,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+)
 from logger import log_event, log_state
 from player import Player
 from shot import Shot
@@ -12,10 +19,14 @@ from shot import Shot
 
 def main():
     pygame.init()
+    pygame.font.init()
     clock = pygame.time.Clock()
     dt = 0
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Bug Smashers")
+    score_font = pygame.font.Font(None, SCORE_FONT_SIZE)
+    score = 0
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -53,11 +64,16 @@ def main():
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
+                    score += int(ASTEROID_MIN_RADIUS * 4 / asteroid.radius) * 100
                     shot.kill()
                     asteroid.split()
+                    break
 
         for sprite in drawable:
             sprite.draw(screen)
+
+        score_surface = score_font.render(f"Score: {score}", True, SCORE_COLOR)
+        screen.blit(score_surface, (20, 18))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
